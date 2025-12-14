@@ -1,86 +1,131 @@
 ﻿@model IEnumerable<MyCodeManager.Models.Snippet>
 
-    @{
-    ViewData["Title"] = "Dashboard";
+@{
+    ViewData["Title"] = ViewData["CurrentFilter"] ?? "All Snippets";
+}
+
+<style>
+    /* 1. تصميم الكروت الجديد: لون ثابت ومريح للعين (VS Code Style) */
+    .snippet-card {
+        background-color: #1e1e1e; /* رمادي غامق جداً */
+        border: 1px solid #333;
+        border-radius: 10px;
+        transition: transform 0.2s, border-color 0.2s;
+        height: 100%;
+        position: relative; /* مهم للنجمة */
     }
 
-    <style>
-        /* تصميم البطاقات الزجاجية */
-        .snippet-card {
-            background: rgba(40, 44, 52, 0.6); /* لون شفاف */
-            backdrop-filter: blur(10px); /* تأثير الضباب خلف البطاقة */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            transition: transform 0.3s, border-color 0.3s;
+        .snippet-card:hover {
+            transform: translateY(-3px);
+            border-color: #007acc; /* إطار أزرق عند التحويم */
         }
 
-            .snippet-card:hover {
-                transform: translateY(-5px);
-                border-color: rgba(52, 152, 219, 0.5); /* لون أزرق عند التحويم */
-            }
-        /* منطقة الكود المصغر */
-        .code-preview {
-            font-family: 'Consolas', monospace;
-            font-size: 0.8rem;
-            background-color: rgba(0,0,0,0.3);
-            color: #aab;
-            height: 100px;
-            overflow: hidden;
-            border-radius: 8px;
-            padding: 10px;
-            white-space: pre-wrap; /* الحفاظ على الأسطر */
-        }
-    </style>
+    /* 2. تحسين النصوص */
+    .card-title {
+        color: #d4d4d4; /* لون أبيض "مطفي" مريح للقراءة */
+        font-weight: 600;
+        margin-right: 30px; /* ترك مسافة للنجمة */
+    }
 
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8">
-            <form asp-action="Index" method="get">
-                <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" name="searchString" class="form-control bg-dark border-secondary text-white" placeholder="Search snippets...">
-                </div>
-            </form>
-        </div>
+    .card-lang-text {
+        color: #9cdcfe; /* لون أزرق فاتح للنصوص الفرعية */
+        font-size: 0.85rem;
+    }
+
+    /* 3. منطقة الكود المصغر */
+    .code-preview {
+        background-color: #000000; /* خلفية سوداء تماماً للكود */
+        color: #ce9178; /* لون برتقالي باهت للكود */
+        font-family: 'Consolas', monospace;
+        font-size: 0.8rem;
+        padding: 12px;
+        border-radius: 6px;
+        height: 110px;
+        overflow: hidden;
+        margin-top: 10px;
+        opacity: 0.9;
+    }
+
+    /* 4. زر النجمة العائم */
+    .star-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 10; /* ليكون فوق الرابط */
+        transition: transform 0.2s;
+    }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+    .star-filled {
+        color: #f1c40f;
+    }
+    /* أصفر */
+    .star-empty {
+        color: #444;
+    }
+    /* رمادي باهت */
+</style>
+
+<h2 class="text-white mb-4 ps-2 border-start border-4 border-primary">
+    @ViewData["Title"]
+</h2>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form asp-action="Index" method="get">
+            <div class="input-group">
+                <input type="text" name="searchString" class="form-control bg-dark text-white border-secondary" placeholder="Search by title or code...">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="row g-4">
-        @foreach (var item in Model)
+<div class="row g-4">
+    @foreach (var item in Model)
     {
-        var badgeColor = "bg-secondary"; var icon = "fa-code";
-        if (item.Language == "C#") { badgeColor = "bg-csharp"; icon = "fa-copyright"; }
-        else if (item.Language == "JavaScript") { badgeColor = "bg-js"; icon = "fa-brands fa-js"; }
-        else if (item.Language == "HTML/CSS") { badgeColor = "bg-html"; icon = "fa-brands fa-html5"; }
-        else if (item.Language == "SQL") { badgeColor = "bg-sql"; icon = "fa-database"; }
+        var badgeColor = "bg-secondary";
+        if (item.Language == "C#") { badgeColor = "bg-csharp"; }
+        else if (item.Language == "JavaScript") { badgeColor = "bg-js"; }
+        else if (item.Language == "HTML/CSS") { badgeColor = "bg-html"; }
+        else if (item.Language == "SQL") { badgeColor = "bg-sql"; }
 
         <div class="col-md-4">
-            <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-white">
-                <div class="card snippet-card h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0 fw-bold text-truncate">
-                            @if (item.IsFavorite)
-                            {
-                            <span class="text-warning me-1" title="Favorite">⭐</span>
-                            }
-                            @item.Title
-                        </h5>
-                        <i class="fas fa-expand text-muted small opacity-50"></i>
-                    </div>
+            <div class="snippet-card p-3">
 
-                    <div class="mb-3">
-                        <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 28px; height: 28px; font-size: 0.8rem;">
-                            @if(item.Language == "JavaScript") { <span>JS</span> }
-                            else if (item.Language == "HTML/CSS") { <span>H</span> }
-                            else if (item.Language == "SQL") { <span>SL</span> }
-                            else { <span>C#</span> }
+                <a asp-action="ToggleFavorite" asp-route-id="@item.Id" class="star-btn">
+                    @if (item.IsFavorite)
+                    {
+                        <i class="fas fa-star star-filled"></i>
+                    }
+                    else
+                    {
+                        <i class="far fa-star star-empty"></i>
+                    }
+                </a>
+
+                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+
+                    <h5 class="card-title text-truncate">@item.Title</h5>
+
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 20px; height: 20px; font-size: 0.7rem; margin-right: 8px;">
                         </span>
-                        <span class="text-muted small ms-2">@item.Language</span>
+                        <span class="card-lang-text">@item.Language</span>
                     </div>
 
                     <div class="code-preview">
                         @item.Code
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
     }
-    </div>
+</div>

@@ -7,30 +7,34 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cyborg/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+
     <style>
-        /* تنسيقات مخصصة لتطبيق الديزاين المطلوب */
         body {
-            overflow-x: hidden; /* منع السكرول الأفقي */
-            background-color: #111; /* خلفية سوداء داكنة */
+            overflow-x: hidden;
+            background-color: #111;
         }
-        /* القائمة الجانبية */
+        /* القائمة الجانبية الثابتة */
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
             z-index: 100;
-            padding: 20px 0;
+            padding: 0; /* إلغاء الحواشي لجعل التحكم أسهل */
             box-shadow: inset -1px 0 0 rgba(255, 255, 255, .1);
-            background-color: #1a1a1a; /* لون القائمة */
+            background-color: #1a1a1a;
             width: 240px;
+            display: flex;
+            flex-direction: column; /* ترتيب عمودي */
+            height: 100vh; /* ملء ارتفاع الشاشة */
         }
-        /* منطقة المحتوى الرئيسي */
+
         .main-content {
-            margin-left: 240px; /* إزاحة لليمين بقدر عرض القائمة */
+            margin-left: 240px;
             padding: 20px;
         }
-        /* زر القائمة الجانبية */
+
+        /* تنسيق الروابط */
         .nav-link {
             color: #bbb;
             padding: 12px 20px;
@@ -57,7 +61,17 @@
             margin-right: 12px;
             font-size: 0.9rem;
         }
-        /* ألوان أيقونات اللغات */
+
+        /* منطقة القائمة القابلة للسكرول */
+        .sidebar-menu {
+            overflow-y: auto; /* السماح بالسكرول العمودي */
+            flex-grow: 1; /* تأخذ المساحة المتبقية */
+            padding-top: 20px;
+            scrollbar-width: thin; /* شريط تمرير رفيع */
+            scrollbar-color: #444 #1a1a1a;
+        }
+
+        /* ألوان اللغات */
         .bg-csharp {
             background-color: #e74c3c;
             color: white;
@@ -83,31 +97,38 @@
 
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3 d-flex flex-col flex-column h-100">
+            <nav class="sidebar">
 
-                    <a class="d-flex align-items-center mb-4 mb-md-0 me-md-auto text-white text-decoration-none px-4">
+                <div class="p-4 pb-2">
+                    <a class="d-flex align-items-center text-white text-decoration-none">
                         <i class="fas fa-boxes fs-4 me-2 text-primary"></i>
                         <span class="fs-5 fw-bold">CODE VAULT</span>
                     </a>
+                </div>
 
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-5 mb-3 text-muted text-uppercase">
-                        <span>Languages</span>
+                <div class="sidebar-menu">
+                    <h6 class="sidebar-heading px-4 mb-3 text-muted text-uppercase" style="font-size: 0.8rem;">
+                        Main Menu
                     </h6>
-                    <ul class="nav flex-column mb-auto">
+
+                    <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" asp-action="Index" asp-route-lang="" asp-route-showFavorites="false">
                                 <span class="nav-icon-circle bg-secondary"><i class="fas fa-layer-group"></i></span> All Snippets
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" asp-action="Index" asp-route-showFavorites="true">
                                 <span class="nav-icon-circle bg-warning text-dark"><i class="fas fa-star"></i></span> Favorites
                             </a>
                         </li>
 
-                        <li class="my-3 border-top border-secondary"></li>
+                        <li class="my-3 border-top border-secondary mx-3"></li>
+
+                        <h6 class="sidebar-heading px-4 mb-2 text-muted text-uppercase" style="font-size: 0.8rem;">
+                            Filter by Language
+                        </h6>
+
                         <li class="nav-item">
                             <a class="nav-link" asp-action="Index" asp-route-lang="C#">
                                 <span class="nav-icon-circle bg-csharp">C#</span> C#
@@ -119,7 +140,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-action="Index" asp-route-lang="HTML/CSS">
+                            <a class="nav-link" asp-action="Index" asp-route-lang="HTML">
                                 <span class="nav-icon-circle bg-html">H</span> HTML/CSS
                             </a>
                         </li>
@@ -133,23 +154,22 @@
                                 <span class="nav-icon-circle bg-danger">J</span> Java
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" asp-action="Index" asp-route-lang="Kotlin">
                                 <span class="nav-icon-circle" style="background-color: #a29bfe; color: black;">K</span> Kotlin
                             </a>
                         </li>
                     </ul>
+                </div>
 
-                    <div class="p-4 mt-auto">
-                        <a asp-controller="Snippets" asp-action="Create" class="btn btn-primary w-100 py-2 fw-bold shadow">
-                            + New Snippet
-                        </a>
-                    </div>
+                <div class="p-3 mt-auto border-top border-secondary bg-dark">
+                    <a asp-controller="Snippets" asp-action="Create" class="btn btn-primary w-100 py-2 fw-bold shadow">
+                        + New Snippet
+                    </a>
                 </div>
             </nav>
 
-            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-4 main-content bg-dark">
+            <main class="main-content bg-dark min-vh-100">
                 @RenderBody()
             </main>
         </div>
@@ -157,8 +177,8 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

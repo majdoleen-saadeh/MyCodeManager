@@ -164,12 +164,18 @@
                     <div class="code-preview">
                         <pre style="margin: 0; white-space: pre-wrap;"><code class="language-@item.Language.Replace("#", "sharp")" style="background: transparent; padding: 0;">@item.Code</code></pre>
                     </div>
-
                     <div class="mt-2 pt-2 border-top border-secondary opacity-50 d-flex justify-content-end">
-                        <small class="text-muted" style="font-size: 0.7rem;">
-                            @item.CreatedAt.ToString("yyyy-MM-dd") <i class="far fa-calendar-alt ms-1"></i>
-                        </small>
-                    </div>
+    <small class="text-muted" style="font-size: 0.7rem;">
+       @if (item.CreatedAt.Year > 2000)
+       {
+           <span>@item.CreatedAt.ToString("yyyy-MM-dd")</span> <i class="far fa-calendar-alt ms-1"></i>
+       }
+       else
+       {
+           <span>Archived</span> <i class="fas fa-archive ms-1"></i>
+       }
+    </small>
+</div>
                 </a>
             </div>
         </div>

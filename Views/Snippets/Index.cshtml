@@ -1,0 +1,75 @@
+﻿@model IEnumerable<MyCodeManager.Models.Snippet>
+
+@{
+    ViewData["Title"] = "my code library";
+}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">📚 Smart Code Library</h1>
+        <p class="lead text-muted">Your place to store and retrieve your software solutions</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form asp-controller="Snippets" asp-action="Index" method="get">
+                <div class="input-group">
+                    <input type="text" name="searchString" class="form-control form-control-lg" placeholder="search (for example: C#, SQL)..." />
+                    <button class="btn btn-primary" type="submit">🔍search</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">show all</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-success btn-lg w-100 shadow-sm">+ add new code</a>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center mt-5">
+                <div class="alert alert-warning"> No results match your search!🧐</div>
+            </div>
+        }
+
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white rounded-top">
+                        @{
+                            var badgeColor = "bg-secondary";
+                            if (item.Language == "C#") { badgeColor = "bg-primary"; }
+                            else if (item.Language == "HTML") { badgeColor = "bg-danger"; }
+                            else if (item.Language == "JavaScript") { badgeColor = "bg-warning text-dark"; }
+                            else if (item.Language == "SQL") { badgeColor = "bg-info text-dark"; }
+                        }
+                        <span class="badge @badgeColor">@item.Language</span>
+
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-white me-2 text-decoration-none" title="Edit">✏️</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger text-decoration-none" title="delete">🗑️</a>
+                        </div>
+                    </div>
+                    <div class="card-body bg-light">
+                        <h5 class="card-title fw-bold d-flex justify-content-between">
+                            @item.Title
+                            @if (item.IsFavorite)
+                            {
+                                <span title="Favorite">⭐</span>
+                            }
+                        </h5>
+                        <div class="p-3 bg-dark text-white rounded mt-3" style="font-family: 'Consolas', monospace; font-size: 0.85em; height: 120px; overflow: hidden; opacity: 0.9;">
+                            @item.Code
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center pb-3">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm px-4 rounded-pill">show details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,68 @@
+﻿@model MyCodeManager.Models.Snippet
+
+@{
+    ViewData["Title"] = "Snippet Details";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-4">
+            <div>
+                <h2 class="mb-0">@Model.Title</h2>
+                <span class="badge bg-warning text-dark mt-2">@Model.Language</span>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-light btn-sm">Back to List ↪️</a>
+        </div>
+
+        <div class="card-body bg-light p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-muted">Source Code:</strong>
+                <button onclick="copyToClipboard()" class="btn btn-primary btn-sm" id="copyBtn">
+                    📋 Copy Code
+                </button>
+            </div>
+
+            <div class="position-relative">
+                <textarea id="codeText" class="form-control bg-dark text-white font-monospace p-3"
+                          rows="15" readonly style="resize: none;">@Model.Code</textarea>
+            </div>
+        </div>
+
+        <div class="card-footer text-center p-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4">Edit ✏️</a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger px-4 ms-2">Delete 🗑️</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard() {
+        // 1. Get the text field
+        var copyText = document.getElementById("codeText");
+
+        // 2. Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        // 3. Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            // 4. Change button text to "Copied!" temporarily
+            var btn = document.getElementById("copyBtn");
+            var originalText = btn.innerHTML;
+
+            btn.innerHTML = "✅ Copied!";
+            btn.classList.remove("btn-primary");
+            btn.classList.add("btn-success");
+
+            // Return to original state after 2 seconds
+            setTimeout(function() {
+                btn.innerHTML = originalText;
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-primary");
+            }, 2000);
+        });
+    }
+</script>

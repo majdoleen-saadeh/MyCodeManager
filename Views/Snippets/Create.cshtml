@@ -1,0 +1,50 @@
+﻿@model MyCodeManager.Models.Snippet
+
+@{
+    ViewData["Title"] = "add new code";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">📝Add a new code snippet</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+
+                        <div class="form-group mb-3">
+                            <label class="control-label fw-bold">code title</label>
+                            <input asp-for="Title" class="form-control" placeholder="For example: the function to add two numbers" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label fw-bold">Programming language</label>
+                            <select asp-for="Language" class="form-control">
+                                <option value="C#">C#</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="HTML">HTML</option>
+                                <option value="SQL">SQL</option>
+                                <option value="Python">Python</option>
+                                <option value="CSS">CSS</option>
+                                <option value="java">java</option>
+                                <option value="kotlin">kotlin</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label fw-bold">the code</label>
+                            <textarea asp-for="Code" class="form-control font-monospace" rows="10" placeholder="copy the code here..."></textarea>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <input type="submit" value=" save the code " class="btn btn-success btn-lg px-5" />
+                            <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

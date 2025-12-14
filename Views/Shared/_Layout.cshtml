@@ -94,25 +94,37 @@
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-5 mb-3 text-muted text-uppercase">
                         <span>Languages</span>
                     </h6>
-
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="/Snippets?searchString=C#">
+                            <a class="nav-link" asp-action="Index" asp-route-lang="" asp-route-showFavorites="false">
+                                <span class="nav-icon-circle bg-secondary"><i class="fas fa-layer-group"></i></span> All Snippets
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-action="Index" asp-route-showFavorites="true">
+                                <span class="nav-icon-circle bg-warning text-dark"><i class="fas fa-star"></i></span> Favorites
+                            </a>
+                        </li>
+
+                        <li class="my-3 border-top border-secondary"></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-action="Index" asp-route-lang="C#">
                                 <span class="nav-icon-circle bg-csharp">C#</span> C#
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Snippets?searchString=JavaScript">
-                                <span class="nav-icon-circle bg-js">JS</span> JS
+                            <a class="nav-link" asp-action="Index" asp-route-lang="JavaScript">
+                                <span class="nav-icon-circle bg-js">JS</span> JavaScript
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Snippets?searchString=HTML/CSS">
+                            <a class="nav-link" asp-action="Index" asp-route-lang="HTML/CSS">
                                 <span class="nav-icon-circle bg-html">H</span> HTML/CSS
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Snippets?searchString=SQL">
+                            <a class="nav-link" asp-action="Index" asp-route-lang="SQL">
                                 <span class="nav-icon-circle bg-sql">SL</span> SQL
                             </a>
                         </li>

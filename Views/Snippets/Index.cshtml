@@ -91,10 +91,11 @@
 <div class="row g-4">
     @foreach (var item in Model)
     {
+        // 1. منطق تحديد الألوان (تم تحديثه ليشمل HTML و HTML/CSS)
         var badgeColor = "bg-secondary";
         if (item.Language == "C#") { badgeColor = "bg-csharp"; }
         else if (item.Language == "JavaScript") { badgeColor = "bg-js"; }
-        else if (item.Language == "HTML/CSS") { badgeColor = "bg-html"; }
+        else if (item.Language == "HTML" || item.Language == "HTML/CSS") { badgeColor = "bg-html"; }
         else if (item.Language == "SQL") { badgeColor = "bg-sql"; }
 
         <div class="col-md-4">
@@ -117,9 +118,32 @@
 
                     <div class="d-flex align-items-center mb-2">
                         <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 20px; height: 20px; font-size: 0.7rem; margin-right: 8px;">
+                            @if (item.Language == "JavaScript")
+                            {
+                                <span>JS</span>
+                            }
+                            else if (item.Language == "HTML" || item.Language == "HTML/CSS")
+                            {
+
+                                <span>H</span>
+                            }
+                            else if (item.Language == "SQL")
+                            {
+
+                                <span>SL</span>
+                            }
+                            else
+                            {
+
+                                <span>C#</span>
+                            }
                         </span>
-                        <span class="card-lang-text">@item.Language</span>
+
+                        <span class="card-lang-text">
+                            @(item.Language == "HTML" ? "HTML/CSS" : item.Language)
+                        </span>
                     </div>
+
                     <div class="code-preview">
                         <pre style="margin: 0; white-space: pre-wrap;"><code class="language-@item.Language.Replace("#", "sharp")" style="background: transparent; padding: 0;">@item.Code</code></pre>
                     </div>

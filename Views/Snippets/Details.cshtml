@@ -6,63 +6,67 @@
 
 <div class="container mt-5">
 
-    <div class="card shadow-lg">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg" style="border: 1px solid #333;">
 
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-4">
-            <div>
-                <h2 class="mb-0">@Model.Title</h2>
-                <span class="badge bg-warning text-dark mt-2">@Model.Language</span>
+                <div class="card-header d-flex justify-content-between align-items-center p-3" style="background-color: #252526; border-bottom: 1px solid #1e1e1e;">
+                    <div class="d-flex align-items-center">
+                        <h3 class="mb-0 text-white me-3">@Model.Title</h3>
+                        <span class="badge bg-primary text-white">@Model.Language</span>
+                    </div>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm text-white">Back to List ↪️</a>
+                </div>
+
+                <div class="card-body p-0" style="background-color: #1e1e1e;">
+
+                    <div class="d-flex justify-content-between align-items-center p-2" style="background-color: #2d2d2d; border-bottom: 1px solid #333;">
+                        <span class="text-muted small ps-2"><i class="fas fa-code"></i> Source Code</span>
+                        <button onclick="copyToClipboard()" class="btn btn-dark btn-sm border-secondary" id="copyBtn">
+                            📋 Copy
+                        </button>
+                    </div>
+
+                    <div class="p-0">
+                        <pre class="m-0" style="border-radius: 0;"><code id="codeBlock" class="language-@Model.Language.Replace("#", "sharp")" style="font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;">@Model.Code</code></pre>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center p-3" style="background-color: #252526; border-top: 1px solid #333;">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4 fw-bold">Edit ✏️</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger px-4 ms-2 fw-bold">Delete 🗑️</a>
+                </div>
             </div>
-            <a asp-action="Index" class="btn btn-outline-light btn-sm">Back to List ↪️</a>
-        </div>
-
-        <div class="card-body bg-light p-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong class="text-muted">Source Code:</strong>
-                <button onclick="copyToClipboard()" class="btn btn-primary btn-sm" id="copyBtn">
-                    📋 Copy Code
-                </button>
-            </div>
-
-            <div class="position-relative">
-                <textarea id="codeText" class="form-control bg-dark text-white font-monospace p-3"
-                          rows="15" readonly style="resize: none;">@Model.Code</textarea>
-            </div>
-        </div>
-
-        <div class="card-footer text-center p-3">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4">Edit ✏️</a>
-            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger px-4 ms-2">Delete 🗑️</a>
         </div>
     </div>
 </div>
 
 <script>
     function copyToClipboard() {
-        // 1. Get the text field
-        var copyText = document.getElementById("codeText");
+        // 1. تحديد عنصر الكود (وليس textarea كما كان سابقاً)
+        var codeElement = document.getElementById("codeBlock");
 
-        // 2. Select the text field
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+        // 2. أخذ النص الموجود بداخله
+        var codeText = codeElement.innerText;
 
-        // 3. Copy the text inside the text field
-        navigator.clipboard.writeText(copyText.value).then(() => {
-            // 4. Change button text to "Copied!" temporarily
+        // 3. النسخ للحافظة
+        navigator.clipboard.writeText(codeText).then(() => {
+            // 4. تأثير تغيير الزر عند النجاح
             var btn = document.getElementById("copyBtn");
-            var originalText = btn.innerHTML;
+            var originalHTML = btn.innerHTML; // نحفظ الشكل القديم (الأيقونة والنص)
 
             btn.innerHTML = "✅ Copied!";
-            btn.classList.remove("btn-primary");
+            btn.classList.remove("btn-dark");
             btn.classList.add("btn-success");
 
-            // Return to original state after 2 seconds
+            // العودة للشكل الأصلي بعد ثانيتين
             setTimeout(function() {
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalHTML;
                 btn.classList.remove("btn-success");
-                btn.classList.add("btn-primary");
+                btn.classList.add("btn-dark");
             }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
         });
     }
 </script>

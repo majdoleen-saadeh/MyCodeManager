@@ -120,9 +120,8 @@
                         </span>
                         <span class="card-lang-text">@item.Language</span>
                     </div>
-
                     <div class="code-preview">
-                        @item.Code
+                        <pre style="margin: 0; white-space: pre-wrap;"><code class="language-@item.Language.Replace("#", "sharp")" style="background: transparent; padding: 0;">@item.Code</code></pre>
                     </div>
                 </a>
             </div>

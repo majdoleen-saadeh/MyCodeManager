@@ -8,12 +8,13 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow bg-dark text-white">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-warning text-dark">
                     <h3 class="mb-0">✏️ Edit Snippet</h3>
                 </div>
                 <div class="card-body">
                     <form asp-action="Edit">
                         <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
 
                         <div class="form-group mb-3">
                             <label class="control-label fw-bold">Title</label>
@@ -26,9 +27,17 @@
                             <select asp-for="Language" class="form-control bg-secondary text-white border-0">
                                 <option value="C#">C#</option>
                                 <option value="JavaScript">JavaScript</option>
-                                <option value="HTML/CSS">HTML/CSS</option>
+                                <option value="HTML">HTML/CSS</option>
                                 <option value="SQL">SQL</option>
+                                <option value="Java">Java</option>
+                                <option value="Kotlin">Kotlin</option>
                             </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label fw-bold text-info">Description</label>
+                            <textarea asp-for="Description" class="form-control bg-secondary text-white border-0" rows="2"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">

@@ -4,53 +4,117 @@
     ViewData["Title"] = "Create Snippet";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow bg-dark text-white">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">📝 New Snippet</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Create">
+<style>
+    /* 1. تصميم الكارت الخارجي */
+    .form-card {
+        background-color: #1e1e1e; /* رمادي غامق مثل VS Code */
+        border: 1px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Title</label>
-                            <input asp-for="Title" class="form-control bg-secondary text-white border-0" placeholder="e.g. Database Connection" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
+    .card-header-custom {
+        background-color: #252526; /* درجة أفتح قليلاً للرأس */
+        border-bottom: 1px solid #333;
+        padding: 20px;
+    }
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Language</label>
-                            <select asp-for="Language" class="form-control bg-secondary text-white border-0">
-                                <option value="C#">C#</option>
-                                <option value="JavaScript">JavaScript</option>
-                                <option value="HTML">HTML/CSS</option>
-                                <option value="SQL">SQL</option>
-                                <option value="Java">Java</option>
-                                <option value="Kotlin">Kotlin</option>
-                            </select>
-                        </div>
+    /* 2. تصميم حقول الإدخال */
+    .form-control, .form-select {
+        background-color: #2d2d2d !important; /* لون الخلفية للحقل */
+        border: 1px solid #3e3e42; /* لون الحدود ناعم */
+        color: #d4d4d4 !important; /* لون النص أبيض هادئ */
+        border-radius: 4px;
+        transition: border-color 0.2s;
+    }
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold text-info">Description (Optional)</label>
-                            <textarea asp-for="Description" class="form-control bg-secondary text-white border-0" rows="2" placeholder="Short description about this code..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
+        /* عند الضغط داخل الحقل */
+        .form-control:focus, .form-select:focus {
+            background-color: #2d2d2d !important;
+            border-color: #007acc; /* حدود زرقاء عند الكتابة */
+            color: #fff !important;
+            box-shadow: none; /* إلغاء التوهج المزعج */
+        }
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Code</label>
-                            <textarea asp-for="Code" class="form-control font-monospace bg-dark text-info border-secondary" rows="10" placeholder="Paste your code here..."></textarea>
-                            <span asp-validation-for="Code" class="text-danger"></span>
-                        </div>
+        /* لون الـ Placeholder (النص التوضيحي الباهت) */
+        .form-control::placeholder {
+            color: #6e6e6e;
+            font-style: italic;
+        }
 
-                        <div class="form-group text-center mt-4">
-                            <input type="submit" value="Save Snippet" class="btn btn-success btn-lg px-5" />
-                            <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+    /* 3. العناوين (Labels) */
+    .form-label {
+        color: #cccccc;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    /* 4. منطقة الكود */
+    .code-editor {
+        font-family: 'Consolas', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #9cdcfe !important; /* لون أزرق فاتح للكود */
+    }
+</style>
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+
+        <div class="form-card">
+
+            <div class="card-header-custom d-flex align-items-center">
+                <i class="fas fa-plus-circle fa-lg text-primary me-3"></i>
+                <h4 class="mb-0 text-white">Add New Snippet</h4>
+            </div>
+
+            <div class="card-body p-4">
+                <form asp-action="Create">
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. Connect to Database" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Language" class="form-label">Language</label>
+                        <select asp-for="Language" class="form-select">
+                            <option value="C#">C#</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="HTML">HTML/CSS</option>
+                            <option value="SQL">SQL</option>
+                            <option value="Java">Java</option>
+                            <option value="Kotlin">Kotlin</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description <span class="text-muted small fw-normal">(Optional)</span></label>
+                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Briefly explain what this code does..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Code" class="form-label">Source Code</label>
+                        <textarea asp-for="Code" class="form-control code-editor" rows="12" placeholder="// Paste your code here..."></textarea>
+                        <span asp-validation-for="Code" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top border-secondary pt-3 mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold">Save Snippet</button>
+                    </div>
+
+                </form>
             </div>
         </div>
+
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

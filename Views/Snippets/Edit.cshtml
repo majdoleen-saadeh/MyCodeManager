@@ -4,62 +4,132 @@
     ViewData["Title"] = "Edit Snippet";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow bg-dark text-white">
-                <div class="card-header bg-warning text-dark">
-                    <h3 class="mb-0">✏️ Edit Snippet</h3>
+<style>
+    /* نفس ستايل صفحة الإضافة لتوحيد الشكل */
+    .form-card {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .card-header-custom {
+        background-color: #252526;
+        border-bottom: 1px solid #333;
+        padding: 20px;
+    }
+
+    .form-control, .form-select {
+        background-color: #2d2d2d !important;
+        border: 1px solid #3e3e42;
+        color: #d4d4d4 !important;
+        border-radius: 4px;
+    }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #2d2d2d !important;
+            border-color: #007acc;
+            color: #fff !important;
+            box-shadow: none;
+        }
+
+    .form-label {
+        color: #cccccc;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .code-editor {
+        font-family: 'Consolas', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #9cdcfe !important;
+    }
+
+    /* ستايل خاص للمربع التشيك بوكس */
+    .form-check-input {
+        background-color: #2d2d2d;
+        border-color: #3e3e42;
+        cursor: pointer;
+    }
+
+        .form-check-input:checked {
+            background-color: #f1c40f; /* لون أصفر عند التفعيل */
+            border-color: #f1c40f;
+        }
+</style>
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+
+        <div class="form-card">
+
+            <div class="card-header-custom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-edit fa-lg text-warning me-3"></i>
+                    <h4 class="mb-0 text-white">Edit Snippet</h4>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Edit">
-                        <input type="hidden" asp-for="Id" />
-                        <input type="hidden" asp-for="CreatedAt" />
+                <span class="badge bg-dark border border-secondary text-muted">ID: @Model.Id</span>
+            </div>
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Title</label>
-                            <input asp-for="Title" class="form-control bg-secondary text-white border-0" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Language</label>
-                            <select asp-for="Language" class="form-control bg-secondary text-white border-0">
-                                <option value="C#">C#</option>
-                                <option value="JavaScript">JavaScript</option>
-                                <option value="HTML">HTML/CSS</option>
-                                <option value="SQL">SQL</option>
-                                <option value="Java">Java</option>
-                                <option value="Kotlin">Kotlin</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Title</label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold text-info">Description</label>
-                            <textarea asp-for="Description" class="form-control bg-secondary text-white border-0" rows="2"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
+                    <div class="mb-3">
+                        <label asp-for="Language" class="form-label">Language</label>
+                        <select asp-for="Language" class="form-select">
+                            <option value="C#">C#</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="HTML">HTML/CSS</option>
+                            <option value="SQL">SQL</option>
+                            <option value="Java">Java</option>
+                            <option value="Kotlin">Kotlin</option>
+                        </select>
+                    </div>
 
-                        <div class="form-group mb-3">
-                            <label class="control-label fw-bold">Code</label>
-                            <textarea asp-for="Code" class="form-control font-monospace bg-dark text-info border-secondary" rows="10"></textarea>
-                            <span asp-validation-for="Code" class="text-danger"></span>
-                        </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
 
-                        <div class="form-check mb-4 p-3 bg-secondary rounded">
-                            <input class="form-check-input" type="checkbox" asp-for="IsFavorite" id="favCheck" style="transform: scale(1.3);">
-                            <label class="form-check-label fw-bold ms-2" for="favCheck">
-                                Mark as Favorite ⭐
+                    <div class="mb-4">
+                        <label asp-for="Code" class="form-label">Source Code</label>
+                        <textarea asp-for="Code" class="form-control code-editor" rows="12"></textarea>
+                        <span asp-validation-for="Code" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 p-3 rounded" style="background-color: #252526; border: 1px solid #333;">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-2" type="checkbox" asp-for="IsFavorite" style="width: 1.2em; height: 1.2em;">
+                            <label class="form-check-label text-white fw-bold" asp-for="IsFavorite">
+                                ⭐ Mark as Favorite
                             </label>
                         </div>
+                    </div>
 
-                        <div class="form-group text-center mt-4">
-                            <input type="submit" value="Save Changes" class="btn btn-success btn-lg px-5" />
-                            <a asp-action="Index" class="btn btn-outline-light btn-lg ms-2">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="d-flex justify-content-end gap-2 border-top border-secondary pt-3 mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-warning px-5 fw-bold text-dark">Save Changes</button>
+                    </div>
+
+                </form>
             </div>
         </div>
+
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

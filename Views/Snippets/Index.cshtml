@@ -5,6 +5,7 @@
 }
 
 <style>
+    /* تصميم الكروت */
     .snippet-card {
         background-color: #1e1e1e;
         border: 1px solid #333;
@@ -19,6 +20,7 @@
             border-color: #007acc;
         }
 
+    /* النصوص */
     .card-title {
         color: #d4d4d4;
         font-weight: 600;
@@ -30,6 +32,7 @@
         font-size: 0.85rem;
     }
 
+    /* منطقة الكود */
     .code-preview {
         background-color: #000000;
         color: #ce9178;
@@ -41,8 +44,10 @@
         overflow: hidden;
         margin-top: 10px;
         opacity: 0.9;
+        position: relative; /* عشان زر النسخ */
     }
 
+    /* زر النجمة */
     .star-btn {
         position: absolute;
         top: 15px;
@@ -67,6 +72,30 @@
         color: #444;
     }
 
+    /* زر النسخ الجديد */
+    .copy-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(255,255,255,0.1);
+        border: none;
+        color: #bbb;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: none; /* مخفي افتراضياً */
+    }
+
+    .code-preview:hover .copy-btn {
+        display: block;
+    }
+    /* يظهر عند التحويم */
+    .copy-btn:hover {
+        background-color: #007acc;
+        color: white;
+    }
+
     /* ألوان اللغات */
     .bg-indigo {
         background-color: #a29bfe;
@@ -74,110 +103,148 @@
     }
 </style>
 
-<h2 class="text-white mb-4 ps-2 border-start border-4 border-primary">
-    @ViewData["Title"]
-</h2>
-
-<div class="row mb-4">
-    <div class="col-md-12">
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="text-white ps-2 border-start border-4 border-primary m-0">
+            @ViewData["Title"]
+        </h2>
+    </div>
+    <div class="col-md-6 mt-3 mt-md-0">
         <form asp-action="Index" method="get">
             <div class="input-group">
-                <input type="text" name="searchString" class="form-control bg-dark text-white border-secondary" placeholder="Search by title, description or code...">
-                <button class="btn btn-primary" type="submit">Search</button>
+                <input type="text" name="searchString" class="form-control bg-dark text-white border-secondary" placeholder="Search snippets...">
+                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="row g-4">
-    @foreach (var item in Model)
-    {
-        var badgeColor = "bg-secondary";
-        if (item.Language == "C#") { badgeColor = "bg-csharp"; }
-        else if (item.Language == "JavaScript") { badgeColor = "bg-js"; }
-        else if (item.Language == "HTML" || item.Language == "HTML/CSS") { badgeColor = "bg-html"; }
-        else if (item.Language == "SQL") { badgeColor = "bg-sql"; }
-        else if (item.Language == "Java") { badgeColor = "bg-danger"; }
-        else if (item.Language == "Kotlin") { badgeColor = "bg-indigo"; }
+@if (!Model.Any())
+{
+    <div class="text-center mt-5 pt-5 opacity-50">
+        <i class="fas fa-box-open fa-5x mb-3 text-secondary"></i>
+        <h4 class="text-muted">No Snippets Found</h4>
+        <p>Start building your library now!</p>
+        <a asp-action="Create" class="btn btn-outline-primary mt-2">Create First Snippet</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            var badgeColor = "bg-secondary";
+            if (item.Language == "C#") { badgeColor = "bg-csharp"; }
+            else if (item.Language == "JavaScript") { badgeColor = "bg-js"; }
+            else if (item.Language == "HTML" || item.Language == "HTML/CSS") { badgeColor = "bg-html"; }
+            else if (item.Language == "SQL") { badgeColor = "bg-sql"; }
+            else if (item.Language == "Java") { badgeColor = "bg-danger"; }
+            else if (item.Language == "Kotlin") { badgeColor = "bg-indigo"; }
 
-        <div class="col-md-4">
-            <div class="snippet-card p-3">
+            <div class="col-md-4">
+                <div class="snippet-card p-3">
 
-                <a asp-action="ToggleFavorite" asp-route-id="@item.Id" class="star-btn">
-                    @if (item.IsFavorite)
-                    {
-                        <i class="fas fa-star star-filled"></i>
-                    }
-                    else
-                    {
+                    <a asp-action="ToggleFavorite" asp-route-id="@item.Id" class="star-btn" title="Toggle Favorite">
+                        @if (item.IsFavorite)
+                        {
+                            <i class="fas fa-star star-filled"></i>
+                        }
+                        else
+                        {
 
-                        <i class="far fa-star star-empty"></i>
-                    }
-                </a>
+                            <i class="far fa-star star-empty"></i>
+                        }
+                    </a>
 
-                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
 
-                    <h5 class="card-title text-truncate">@item.Title</h5>
+                        <h5 class="card-title text-truncate">@item.Title</h5>
 
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 20px; height: 20px; font-size: 0.7rem; margin-right: 8px;">
-                            @if (item.Language == "JavaScript")
-                            {
-                                <span>JS</span>
-                            }
-                            else if (item.Language == "HTML" || item.Language == "HTML/CSS")
-                            {
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 20px; height: 20px; font-size: 0.7rem; margin-right: 8px;">
+                                @if (item.Language == "JavaScript")
+                                {
+                                    <span>JS</span>
+                                }
+                                else if (item.Language == "HTML" || item.Language == "HTML/CSS")
+                                {
 
-                                <span>H</span>
-                            }
-                            else if (item.Language == "SQL")
-                            {
+                                    <span>H</span>
+                                }
+                                else if (item.Language == "SQL")
+                                {
 
-                                <span>SL</span>
-                            }
-                            else if (item.Language == "Java")
-                            {
+                                    <span>SL</span>
+                                }
+                                else if (item.Language == "Java")
+                                {
 
-                                <span>J</span>
-                            }
-                            else if (item.Language == "Kotlin")
-                            {
+                                    <span>J</span>
+                                }
+                                else if (item.Language == "Kotlin")
+                                {
 
-                                <span>K</span>
-                            }
-                            else
-                            {
+                                    <span>K</span>
+                                }
+                                else
+                                {
 
-                                <span>C#</span>
-                            }
-                        </span>
-                        <span class="card-lang-text">
-                            @(item.Language == "HTML" ? "HTML/CSS" : item.Language)
-                        </span>
-                    </div>
+                                    <span>C#</span>
+                                }
+                            </span>
+                            <span class="card-lang-text">
+                                @(item.Language == "HTML" ? "HTML/CSS" : item.Language)
+                            </span>
+                        </div>
 
-                    @if (!string.IsNullOrEmpty(item.Description))
-                    {
-                        <p class="text-muted small mb-2 text-truncate">@item.Description</p>
-                    }
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p class="text-muted small mb-2 text-truncate">@item.Description</p>
+                        }
 
-                    <div class="code-preview">
-                        <pre style="margin: 0; white-space: pre-wrap;"><code class="language-@item.Language.Replace("#", "sharp")" style="background: transparent; padding: 0;">@item.Code</code></pre>
-                    </div>
-                    <div class="mt-2 pt-2 border-top border-secondary opacity-50 d-flex justify-content-end">
-    <small class="text-muted" style="font-size: 0.7rem;">
-       @if (item.CreatedAt.Year > 2000)
-       {
-           <span>@item.CreatedAt.ToString("yyyy-MM-dd")</span> <i class="far fa-calendar-alt ms-1"></i>
-       }
-       else
-       {
-           <span>Archived</span> <i class="fas fa-archive ms-1"></i>
-       }
-    </small>
-</div>
-                </a>
+                        <div class="code-preview">
+                            <button class="copy-btn" onclick="copyToClipboard(this, `@item.Code`)" title="Copy Code">
+                                <i class="far fa-copy"></i> Copy
+                            </button>
+
+                            <pre style="margin: 0; white-space: pre-wrap;"><code class="language-@item.Language.Replace("#", "sharp")" style="background: transparent; padding: 0;">@item.Code</code></pre>
+                        </div>
+
+                        <div class="mt-2 pt-2 border-top border-secondary opacity-50 d-flex justify-content-end">
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                @if (item.CreatedAt.Year > 2000)
+                                {
+                                    <span>@item.CreatedAt.ToString("yyyy-MM-dd")</span>
+                                }
+                                <i class="far fa-calendar-alt ms-1"></i>
+                            </small>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
+        }
+    </div>
+}
+
+<script>
+    // دالة النسخ الذكية
+    function copyToClipboard(btn, text) {
+        // منع الانتقال لصفحة التفاصيل عند الضغط على الزر
+        event.preventDefault();
+        event.stopPropagation();
+
+        // نسخ النص
+        navigator.clipboard.writeText(text).then(function() {
+            // تغيير أيقونة الزر لعلامة صح
+            let originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            btn.classList.add('text-success');
+
+            // إرجاع الزر لحالته الأصلية بعد ثانيتين
+            setTimeout(function() {
+                btn.innerHTML = originalContent;
+                btn.classList.remove('text-success');
+            }, 2000);
+        });
     }
-</div>
+</script>

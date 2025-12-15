@@ -1,5 +1,12 @@
 ﻿@using MyCodeManager.Models
+@using System.Security.Claims
 @inject MyCodeManager.Data.MyCodeManagerContext _context
+
+@{
+    // جلب رقم المستخدم الحالي لتصفية العدادات
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -57,7 +64,6 @@
                 background-color: rgba(255,255,255,0.1);
             }
 
-        /* جعل الجسم يأخذ كامل الارتفاع */
         body {
             min-height: 100vh;
             display: flex;
@@ -89,14 +95,18 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" asp-controller="Snippets" asp-action="Index" asp-route-lang="" asp-route-showFavorites="false">
                             <i class="fas fa-layer-group me-1"></i> All Snippets
-                            <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.7rem;">@_context.Snippet.Count()</span>
+                            <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.7rem;">
+                                @_context.Snippet.Count(s => s.UserId == userId)
+                            </span>
                         </a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-warning" asp-controller="Snippets" asp-action="Index" asp-route-showFavorites="true">
                             <i class="fas fa-star me-1"></i> Favorites
-                            <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.7rem;">@_context.Snippet.Count(s => s.IsFavorite)</span>
+                            <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.7rem;">
+                                @_context.Snippet.Count(s => s.IsFavorite && s.UserId == userId)
+                            </span>
                         </a>
                     </li>
 
@@ -108,46 +118,60 @@
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="C#">
                                     <span><span class="nav-icon-circle bg-csharp">C#</span> C#</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "C#")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => s.Language == "C#" && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="JavaScript">
                                     <span><span class="nav-icon-circle bg-js">JS</span> JavaScript</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "JavaScript")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => s.Language == "JavaScript" && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="HTML">
                                     <span><span class="nav-icon-circle bg-html">H</span> HTML/CSS</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "HTML" || s.Language == "HTML/CSS")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => (s.Language == "HTML" || s.Language == "HTML/CSS") && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="SQL">
                                     <span><span class="nav-icon-circle bg-sql">SL</span> SQL</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "SQL")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => s.Language == "SQL" && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="Java">
                                     <span><span class="nav-icon-circle bg-danger">J</span> Java</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "Java")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => s.Language == "Java" && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" asp-action="Index" asp-route-lang="Kotlin">
                                     <span><span class="nav-icon-circle" style="background-color: #a29bfe; color: black;">K</span> Kotlin</span>
-                                    <span class="badge bg-dark border border-secondary">@_context.Snippet.Count(s => s.Language == "Kotlin")</span>
+                                    <span class="badge bg-dark border border-secondary">
+                                        @_context.Snippet.Count(s => s.Language == "Kotlin" && s.UserId == userId)
+                                    </span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                 </ul>
 
-                <div class="d-flex">
-                    <a asp-controller="Snippets" asp-action="Create" class="btn btn-primary fw-bold">
-                        <i class="fas fa-plus"></i> New Snippet
+                <div class="d-flex align-items-center gap-2">
+                    <partial name="_LoginPartial" />
+
+                    <a asp-controller="Snippets" asp-action="Create" class="btn btn-primary fw-bold btn-sm">
+                        <i class="fas fa-plus"></i> New
                     </a>
                 </div>
             </div>

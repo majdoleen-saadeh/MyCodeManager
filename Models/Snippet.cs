@@ -9,9 +9,11 @@ namespace MyCodeManager.Models
         public string Language { get; set; }
         public string Code { get; set; }
         public bool IsFavorite { get; set; }
+        public string? Description { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // --- الإضافات الجديدة ---
-        public string? Description { get; set; } // الوصف (اختياري)
-        public DateTime CreatedAt { get; set; } = DateTime.Now; // تاريخ الإضافة
+        // === الإضافة الجديدة ===
+        // هذه الخانة ستخزن رقم هوية المستخدم الذي أنشأ الكود
+        public string? UserId { get; set; }
     }
 }

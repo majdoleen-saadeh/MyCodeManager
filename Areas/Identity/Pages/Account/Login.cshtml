@@ -5,76 +5,117 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+<style>
+    /* 1. تصميم الكارت (نفس ستايل الإضافة والتعديل) */
+    .login-card {
+        background-color: #1e1e1e; /* خلفية غامقة للكارت */
+        border: 1px solid #333;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        padding: 40px;
+    }
+
+    /* 2. تحسين حقول الإدخال */
+    .form-floating > .form-control {
+        background-color: #2d2d2d !important;
+        color: #fff !important; /* الكتابة باللون الأبيض */
+        border: 1px solid #444;
+    }
+
+        .form-floating > .form-control:focus {
+            border-color: #007acc; /* حدود زرقاء عند التركيز */
+            box-shadow: 0 0 0 0.25rem rgba(0, 122, 204, 0.25);
+        }
+
+    /* 3. تسميات الحقول (Labels) */
+    .form-floating > label {
+        color: #bbb !important; /* لون رمادي فاتح للنصوص التوضيحية */
+    }
+
+    /* عند الكتابة، النص التوضيحي يصغر ويظل واضحاً */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #007acc !important;
+        opacity: 1;
+    }
+
+    /* 4. الروابط */
+    .auth-links a {
+        color: #0d6efd;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+        .auth-links a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+    /* 5. عنوان الصفحة */
+    .page-header-icon {
+        background-color: rgba(13, 110, 253, 0.1);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 20px auto;
+        color: #0d6efd;
+    }
+</style>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="login-card">
+
+            <div class="text-center mb-4">
+                <div class="page-header-icon">
+                    <i class="fas fa-user-lock fa-2x"></i>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </form>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
+                <h2 class="text-white fw-bold">Welcome Back</h2>
+                <p class="text-muted">Please log in to your account</p>
+            </div>
+
+            <section>
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center" role="alert"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email" class="form-label">Email</label>
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="checkbox mb-3">
+                        <label asp-for="Input.RememberMe" class="form-label text-white">
+                            <input class="form-check-input bg-dark border-secondary me-2" asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+
                     <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary fw-bold">Log in</button>
+                    </div>
+
+                    <div class="auth-links text-center mt-4 pt-3 border-top border-secondary">
+                        <p class="mb-2">
+                            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                        </p>
+                        <p class="mb-0">
+                            Don't have an account? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register now</a>
                         </p>
                     </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
+                </form>
+            </section>
+        </div>
     </div>
 </div>
 

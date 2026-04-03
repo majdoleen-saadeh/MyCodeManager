@@ -52,13 +52,14 @@
     <div class="col-md-6">
         <h2 class="text-white ps-2 border-start border-4 border-primary m-0">@ViewData["Title"]</h2>
     </div>
-    <div class="col-md-6 mt-3 mt-md-0">
-        <form asp-action="Index" method="get">
-            <div class="input-group">
-                <input type="text" name="searchString" class="form-control bg-dark text-white border-secondary" placeholder="Search snippets...">
-                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-            </div>
-        </form>
+    <div class="col-md-6 mt-3 mt-md-0" style="position: relative;">
+        <div class="input-group">
+            <input type="text" id="liveSearchInput" class="form-control bg-dark text-white border-secondary" placeholder="Live search by title or language..." autocomplete="off">
+            <span class="input-group-text bg-primary border-primary text-white"><i class="fas fa-bolt"></i></span>
+        </div>
+        
+        <ul id="searchResultsBox" class="dropdown-menu dropdown-menu-dark w-100 shadow-lg mt-1" style="display:none; position:absolute; z-index: 1000;">
+            </ul>
     </div>
 </div>
 
@@ -167,12 +168,61 @@ else
             btn.innerHTML = '<i class="fas fa-check text-success"></i>';
             setTimeout(function() { btn.innerHTML = originalContent; }, 2000);
             
-            // إشعار لطيف
             Swal.fire({
                 toast: true, position: 'top-end', icon: 'success',
                 title: 'Public Link Copied!', showConfirmButton: false, 
                 timer: 2000, background: '#1e1e1e', color: '#fff'
             });
+        });
+    }
+
+    // === الإضافة الجديدة: كود البحث الذكي (Live Search API) ===
+    const searchInput = document.getElementById('liveSearchInput');
+    const resultsBox = document.getElementById('searchResultsBox');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', async function (e) {
+            const term = e.target.value.trim();
+            
+            // إذا كان المربع فارغاً، نخفي القائمة
+            if (term.length === 0) {
+                resultsBox.style.display = 'none';
+                return;
+            }
+
+            try {
+                // إرسال الطلب للـ API
+                const response = await fetch(`/api/snippets/search?term=${term}`);
+                const data = await response.json(); 
+
+                // مسح النتائج القديمة
+                resultsBox.innerHTML = '';
+                
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        resultsBox.innerHTML += `
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="/Snippets/Details/${item.id}">
+                                    <span class="badge bg-secondary me-2" style="width: 50px;">${item.language}</span> 
+                                    <span class="text-truncate">${item.title}</span>
+                                </a>
+                            </li>`;
+                    });
+                    resultsBox.style.display = 'block'; 
+                } else {
+                    resultsBox.innerHTML = '<li class="dropdown-item text-muted text-center py-2">No results found</li>';
+                    resultsBox.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("API Error:", error);
+            }
+        });
+
+        // إخفاء القائمة عند النقر في أي مكان آخر بالشاشة
+        document.addEventListener('click', function(e) {
+            if (e.target !== searchInput) {
+                resultsBox.style.display = 'none';
+            }
         });
     }
 </script>

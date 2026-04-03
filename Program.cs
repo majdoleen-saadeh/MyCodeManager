@@ -24,6 +24,8 @@ namespace MyCodeManager
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            // تفعيل خدمة الذكاء الاصطناعي
+            builder.Services.AddScoped<MyCodeManager.Services.GeminiAIService>();
 
             var app = builder.Build();
 

@@ -1,0 +1,218 @@
+﻿@{
+    ViewData["Title"] = "AI Assistant";
+}
+
+<style>
+    .chat-container {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 10px;
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .chat-box {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .message {
+        max-width: 80%;
+        padding: 12px 18px;
+        border-radius: 8px;
+        line-height: 1.5;
+    }
+    .user-message {
+        background-color: #0d6efd;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+    }
+    .ai-message {
+        background-color: #2d2d2d;
+        color: #d4d4d4;
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+        border: 1px solid #444;
+    }
+    
+    /* تنسيقات مربع الكود وزر الحفظ الجديد */
+    .ai-message pre {
+        background-color: #000;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        position: relative; /* ضروري لضبط مكان زر الحفظ */
+        margin-top: 10px;
+    }
+    .ai-message code { color: #9cdcfe; font-family: 'Consolas', monospace; }
+    
+    .save-ai-btn {
+        position: absolute;
+        top: 5px; right: 5px;
+        background-color: #198754;
+        border: none; color: white;
+        font-size: 0.75rem; padding: 4px 10px;
+        border-radius: 4px; cursor: pointer;
+        opacity: 0.8; transition: 0.2s;
+    }
+    .save-ai-btn:hover { opacity: 1; background-color: #157347; }
+    
+    .chat-input-area {
+        padding: 15px;
+        background-color: #252526;
+        border-top: 1px solid #333;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+</style>
+
+<div class="row justify-content-center mb-5">
+    <div class="col-md-10">
+        <h3 class="text-white mb-3"><i class="fas fa-robot text-primary me-2"></i> Code Vault AI Assistant</h3>
+        
+        <div class="chat-container">
+            <div class="chat-box" id="chatBox">
+                <div class="message ai-message">
+                    Hello! I'm your AI coding assistant. Ask me anything, and you can save the code I write directly to your Vault! 🤖✨
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="input-group">
+                    <input type="text" id="userInput" class="form-control bg-dark text-white border-secondary" placeholder="Ask for code..." autocomplete="off">
+                    <button class="btn btn-primary px-4 fw-bold" id="sendBtn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user-message');
+            userInput.value = '';
+            
+            const loadingId = 'loading-' + Date.now();
+            appendMessage('<i class="fas fa-spinner fa-spin"></i> AI is thinking...', 'ai-message', loadingId);
+
+            try {
+                const response = await fetch('/AI/Ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+                
+                const formattedResponse = marked.parse(data.response);
+                
+                // 1. إضافة الرسالة للشاشة
+                const newMessageDiv = appendMessage(formattedResponse, 'ai-message');
+                
+                // 2. البحث عن الأكواد داخل الرد لإضافة زر الحفظ لها
+                attachSaveButtons(newMessageDiv);
+                
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                appendMessage('❌ Error communicating with AI.', 'ai-message text-danger');
+            }
+        }
+
+        function appendMessage(content, className, id = '') {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            if (id) div.id = id;
+            div.innerHTML = content;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return div; // نرجع العنصر لكي نبحث بداخله عن الأكواد
+        }
+
+        // دالة تقوم بتركيب أزرار الحفظ على الأكواد
+        function attachSaveButtons(messageElement) {
+            // نبحث عن كل مربعات الكود (pre)
+            const preTags = messageElement.querySelectorAll('pre');
+            
+            preTags.forEach(pre => {
+                const codeBlock = pre.querySelector('code');
+                const rawCode = codeBlock ? codeBlock.innerText : pre.innerText;
+                
+                // محاولة استنتاج لغة البرمجة (marked.js يضيف كلاس مثل language-csharp)
+                let lang = 'C#'; // الافتراضي
+                if (codeBlock && codeBlock.className) {
+                    const classStr = codeBlock.className.toLowerCase();
+                    if (classStr.includes('javascript') || classStr.includes('js')) lang = 'JavaScript';
+                    else if (classStr.includes('html')) lang = 'HTML';
+                    else if (classStr.includes('sql')) lang = 'SQL';
+                    else if (classStr.includes('java') && !classStr.includes('javascript')) lang = 'Java';
+                    else if (classStr.includes('kotlin')) lang = 'Kotlin';
+                }
+
+                // صنع زر الحفظ
+                const btn = document.createElement('button');
+                btn.className = 'save-ai-btn';
+                btn.innerHTML = '<i class="fas fa-save"></i> Save to Vault';
+                
+                // ماذا يحدث عند ضغط الزر؟
+                btn.onclick = function() {
+                    saveCodeToDatabase(btn, rawCode, lang);
+                };
+
+                pre.appendChild(btn);
+            });
+        }
+
+        // دالة إرسال الكود للباك إند لحفظه
+        async function saveCodeToDatabase(btn, code, language) {
+            // تغيير شكل الزر لـ "جاري الحفظ"
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/AI/SaveSnippet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ Code: code, Language: language })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // نجاح! تغيير شكل الزر
+                    btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                    btn.classList.replace('bg-success', 'bg-dark');
+                    
+                    // إظهار إشعار لطيف
+                    Swal.fire({
+                        toast: true, position: 'top-end', icon: 'success',
+                        title: 'Snippet Saved to Vault!',
+                        showConfirmButton: false, timer: 3000,
+                        background: '#1e1e1e', color: '#fff'
+                    });
+                }
+            } catch (error) {
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed';
+            }
+        }
+    </script>
+}

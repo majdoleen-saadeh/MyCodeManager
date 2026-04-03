@@ -6,7 +6,6 @@
     // جلب رقم المستخدم الحالي لتصفية العدادات
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
-
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -19,60 +18,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
 
     <style>
-        /* تنسيقات بسيطة للدوائر الملونة */
-        .nav-icon-circle {
-            width: 20px;
-            height: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: bold;
-            margin-right: 8px;
-            font-size: 0.7rem;
-            vertical-align: middle;
-        }
-
-        .bg-csharp {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .bg-js {
-            background-color: #f1c40f;
-            color: black;
-        }
-
-        .bg-html {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .bg-sql {
-            background-color: #2ecc71;
-            color: white;
-        }
-
-        /* تحسين شكل القائمة المنسدلة في الموبايل */
-        .navbar-nav .nav-link {
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-
-            .navbar-nav .nav-link:hover {
-                background-color: rgba(255,255,255,0.1);
+            /* تنسيقات بسيطة للدوائر الملونة */
+            .nav-icon-circle {
+                width: 20px;
+                height: 20px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                font-weight: bold;
+                margin-right: 8px;
+                font-size: 0.7rem;
+                vertical-align: middle;
             }
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+            .bg-csharp {
+                background-color: #e74c3c;
+                color: white;
+            }
 
-        main {
-            flex: 1;
-        }
+            .bg-js {
+                background-color: #f1c40f;
+                color: black;
+            }
+
+            .bg-html {
+                background-color: #3498db;
+                color: white;
+            }
+
+            .bg-sql {
+                background-color: #2ecc71;
+                color: white;
+            }
+
+            /* تحسين شكل القائمة المنسدلة في الموبايل */
+            .navbar-nav .nav-link {
+                padding: 10px 15px;
+                border-radius: 5px;
+                transition: background 0.2s;
+            }
+
+                .navbar-nav .nav-link:hover {
+                    background-color: rgba(255,255,255,0.1);
+                }
+
+            body {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1;
+            }
     </style>
 </head>
 <body>
@@ -107,6 +106,12 @@
                             <span class="badge bg-secondary ms-1 rounded-pill" style="font-size: 0.7rem;">
                                 @_context.Snippet.Count(s => s.IsFavorite && s.UserId == userId)
                             </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-info fw-bold" asp-controller="AI" asp-action="Chat">
+                            <i class="fas fa-robot me-1"></i> Ask AI ✨
                         </a>
                     </li>
 
@@ -194,6 +199,5 @@
         hljs.highlightAll();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>

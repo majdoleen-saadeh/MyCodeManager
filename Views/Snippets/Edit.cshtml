@@ -4,127 +4,65 @@
     ViewData["Title"] = "Edit Snippet";
 }
 
-<style>
-    /* نفس ستايل صفحة الإضافة لتوحيد الشكل */
-    .form-card {
-        background-color: #1e1e1e;
-        border: 1px solid #333;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-
-    .card-header-custom {
-        background-color: #252526;
-        border-bottom: 1px solid #333;
-        padding: 20px;
-    }
-
-    .form-control, .form-select {
-        background-color: #2d2d2d !important;
-        border: 1px solid #3e3e42;
-        color: #d4d4d4 !important;
-        border-radius: 4px;
-    }
-
-        .form-control:focus, .form-select:focus {
-            background-color: #2d2d2d !important;
-            border-color: #007acc;
-            color: #fff !important;
-            box-shadow: none;
-        }
-
-    .form-label {
-        color: #cccccc;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    .code-editor {
-        font-family: 'Consolas', monospace;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: #9cdcfe !important;
-    }
-
-    /* ستايل خاص للمربع التشيك بوكس */
-    .form-check-input {
-        background-color: #2d2d2d;
-        border-color: #3e3e42;
-        cursor: pointer;
-    }
-
-        .form-check-input:checked {
-            background-color: #f1c40f; /* لون أصفر عند التفعيل */
-            border-color: #f1c40f;
-        }
-</style>
-
-<div class="row justify-content-center mt-4 mb-5">
+<div class="row justify-content-center mt-4">
     <div class="col-md-8">
-
-        <div class="form-card">
-
-            <div class="card-header-custom d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-edit fa-lg text-warning me-3"></i>
-                    <h4 class="mb-0 text-white">Edit Snippet</h4>
-                </div>
-                <span class="badge bg-dark border border-secondary text-muted">ID: @Model.Id</span>
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-header border-secondary">
+                <h4 class="text-white m-0"><i class="fas fa-edit text-warning me-2"></i> Edit Snippet</h4>
             </div>
-
-            <div class="card-body p-4">
+            <div class="card-body">
                 <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="UserId" />
                     <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="IsFavorite" />
+                    <input type="hidden" asp-for="IsPublic" />
+                    <input type="hidden" asp-for="ShareToken" />
 
-                    <div class="mb-3">
-                        <label asp-for="Title" class="form-label">Title</label>
-                        <input asp-for="Title" class="form-control" />
-                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    <div class="form-group mb-3">
+                        <label asp-for="Title" class="control-label text-white mb-2 fw-bold"></label>
+                        <input asp-for="Title" class="form-control bg-dark text-white border-secondary" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Language" class="form-label">Language</label>
-                        <select asp-for="Language" class="form-select">
+                    <div class="form-group mb-3">
+                        <label asp-for="Language" class="control-label text-white mb-2 fw-bold"><i class="fas fa-code"></i> Language</label>
+                        
+                        <select id="languageDropdown" class="form-select bg-dark text-white border-secondary" onchange="handleLanguageChange()">
                             <option value="C#">C#</option>
                             <option value="JavaScript">JavaScript</option>
                             <option value="HTML">HTML/CSS</option>
                             <option value="SQL">SQL</option>
                             <option value="Java">Java</option>
                             <option value="Kotlin">Kotlin</option>
+                            <option value="custom" class="text-info fw-bold">➕ Add New Language... (لغة أخرى)</option>
                         </select>
+
+                        <input asp-for="Language" id="Language" class="form-control bg-dark text-info border-secondary mt-2" style="display: none;" placeholder="Type your custom language here..." />
+                        <span asp-validation-for="Language" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="control-label text-white mb-2 fw-bold"></label>
+                        <textarea asp-for="Description" class="form-control bg-dark text-white border-secondary" rows="2"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-4">
-                        <label asp-for="Code" class="form-label">Source Code</label>
-                        <textarea asp-for="Code" class="form-control code-editor" rows="12"></textarea>
-                        <span asp-validation-for="Code" class="text-danger small"></span>
+                    <div class="form-group mb-4">
+                        <label asp-for="Code" class="control-label text-white mb-2 fw-bold"></label>
+                        <textarea asp-for="Code" class="form-control bg-black text-warning border-secondary" rows="10" style="font-family: 'Consolas', monospace;"></textarea>
+                        <span asp-validation-for="Code" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-4 p-3 rounded" style="background-color: #252526; border: 1px solid #333;">
-                        <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input me-2" type="checkbox" asp-for="IsFavorite" style="width: 1.2em; height: 1.2em;">
-                            <label class="form-check-label text-white fw-bold" asp-for="IsFavorite">
-                                ⭐ Mark as Favorite
-                            </label>
-                        </div>
+                    <div class="form-group d-flex gap-2">
+                        <button type="submit" class="btn btn-warning fw-bold px-4"><i class="fas fa-check me-1"></i> Update Vault</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                     </div>
-
-                    <div class="d-flex justify-content-end gap-2 border-top border-secondary pt-3 mt-3">
-                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-warning px-5 fw-bold text-dark">Save Changes</button>
-                    </div>
-
                 </form>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -132,4 +70,40 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        function handleLanguageChange() {
+            var dropdown = document.getElementById("languageDropdown");
+            var realInput = document.getElementById("Language");
+
+            if (dropdown.value === "custom") {
+                realInput.style.display = "block";
+                realInput.value = "";
+                realInput.focus();
+            } else {
+                realInput.style.display = "none";
+                realInput.value = dropdown.value;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropdown = document.getElementById("languageDropdown");
+            var realInput = document.getElementById("Language");
+            var currentLang = realInput.value;
+
+            if (currentLang) {
+                var optionExists = Array.from(dropdown.options).some(opt => opt.value === currentLang);
+
+                if (optionExists) {
+                    dropdown.value = currentLang;
+                    realInput.style.display = "none";
+                } else {
+                    dropdown.value = "custom";
+                    realInput.style.display = "block";
+                }
+            } else {
+                realInput.value = dropdown.value;
+            }
+        });
+    </script>
 }

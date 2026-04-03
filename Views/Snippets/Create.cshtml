@@ -4,112 +4,58 @@
     ViewData["Title"] = "Create Snippet";
 }
 
-<style>
-    /* 1. تصميم الكارت الخارجي */
-    .form-card {
-        background-color: #1e1e1e; /* رمادي غامق مثل VS Code */
-        border: 1px solid #333;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-
-    .card-header-custom {
-        background-color: #252526; /* درجة أفتح قليلاً للرأس */
-        border-bottom: 1px solid #333;
-        padding: 20px;
-    }
-
-    /* 2. تصميم حقول الإدخال */
-    .form-control, .form-select {
-        background-color: #2d2d2d !important; /* لون الخلفية للحقل */
-        border: 1px solid #3e3e42; /* لون الحدود ناعم */
-        color: #d4d4d4 !important; /* لون النص أبيض هادئ */
-        border-radius: 4px;
-        transition: border-color 0.2s;
-    }
-
-        /* عند الضغط داخل الحقل */
-        .form-control:focus, .form-select:focus {
-            background-color: #2d2d2d !important;
-            border-color: #007acc; /* حدود زرقاء عند الكتابة */
-            color: #fff !important;
-            box-shadow: none; /* إلغاء التوهج المزعج */
-        }
-
-        /* لون الـ Placeholder (النص التوضيحي الباهت) */
-        .form-control::placeholder {
-            color: #6e6e6e;
-            font-style: italic;
-        }
-
-    /* 3. العناوين (Labels) */
-    .form-label {
-        color: #cccccc;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    /* 4. منطقة الكود */
-    .code-editor {
-        font-family: 'Consolas', monospace;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: #9cdcfe !important; /* لون أزرق فاتح للكود */
-    }
-</style>
-
-<div class="row justify-content-center mt-4 mb-5">
+<div class="row justify-content-center mt-4">
     <div class="col-md-8">
-
-        <div class="form-card">
-
-            <div class="card-header-custom d-flex align-items-center">
-                <i class="fas fa-plus-circle fa-lg text-primary me-3"></i>
-                <h4 class="mb-0 text-white">Add New Snippet</h4>
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-header border-secondary">
+                <h4 class="text-white m-0"><i class="fas fa-plus-circle text-primary me-2"></i> Add New Snippet</h4>
             </div>
-
-            <div class="card-body p-4">
+            <div class="card-body">
                 <form asp-action="Create">
-
-                    <div class="mb-3">
-                        <label asp-for="Title" class="form-label">Title</label>
-                        <input asp-for="Title" class="form-control" placeholder="e.g. Connect to Database" />
-                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Title" class="control-label text-white mb-2 fw-bold"></label>
+                        <input asp-for="Title" class="form-control bg-dark text-white border-secondary" placeholder="e.g. User Authentication Function" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Language" class="form-label">Language</label>
-                        <select asp-for="Language" class="form-select">
+                    <div class="form-group mb-3">
+                        <label asp-for="Language" class="control-label text-white mb-2 fw-bold"><i class="fas fa-code"></i> Language</label>
+                        
+                        <select id="languageDropdown" class="form-select bg-dark text-white border-secondary" onchange="handleLanguageChange()">
                             <option value="C#">C#</option>
                             <option value="JavaScript">JavaScript</option>
                             <option value="HTML">HTML/CSS</option>
                             <option value="SQL">SQL</option>
                             <option value="Java">Java</option>
                             <option value="Kotlin">Kotlin</option>
+                            <option value="custom" class="text-info fw-bold">➕ Add New Language... (لغة أخرى)</option>
                         </select>
+
+                        <input asp-for="Language" id="Language" class="form-control bg-dark text-info border-secondary mt-2" style="display: none;" placeholder="Type your custom language here (e.g. Python, Go)..." />
+                        <span asp-validation-for="Language" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Description <span class="text-muted small fw-normal">(Optional)</span></label>
-                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Briefly explain what this code does..."></textarea>
-                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="control-label text-white mb-2 fw-bold"></label>
+                        <textarea asp-for="Description" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="Brief description of what this code does..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-4">
-                        <label asp-for="Code" class="form-label">Source Code</label>
-                        <textarea asp-for="Code" class="form-control code-editor" rows="12" placeholder="// Paste your code here..."></textarea>
-                        <span asp-validation-for="Code" class="text-danger small"></span>
+                    <div class="form-group mb-4">
+                        <label asp-for="Code" class="control-label text-white mb-2 fw-bold"></label>
+                        <textarea asp-for="Code" class="form-control bg-black text-warning border-secondary" rows="8" style="font-family: 'Consolas', monospace;" placeholder="Paste your code here..."></textarea>
+                        <span asp-validation-for="Code" class="text-danger"></span>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 border-top border-secondary pt-3 mt-3">
-                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5 fw-bold">Save Snippet</button>
+                    <div class="form-group d-flex gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold px-4"><i class="fas fa-save me-1"></i> Save Vault</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                     </div>
-
                 </form>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -117,4 +63,26 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        function handleLanguageChange() {
+            var dropdown = document.getElementById("languageDropdown");
+            var realInput = document.getElementById("Language");
+
+            if (dropdown.value === "custom") {
+                realInput.style.display = "block";
+                realInput.value = "";
+                realInput.focus();
+            } else {
+                realInput.style.display = "none";
+                realInput.value = dropdown.value;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropdown = document.getElementById("languageDropdown");
+            var realInput = document.getElementById("Language");
+            realInput.value = dropdown.value;
+        });
+    </script>
 }

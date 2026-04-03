@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "My Dashboard";
+    // جلب البيانات من الكنترولر لتحويلها لجافاسكريبت
+    var labelsJson = System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartLabels);
+    var dataJson = System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartData);
+}
+
+<div class="container mt-4">
+    <h2 class="text-white mb-4 border-start border-4 border-info ps-2">
+        <i class="fas fa-chart-pie me-2"></i> Vault Analytics
+    </h2>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-code fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title text-muted">Total Snippets</h5>
+                    <h2 class="text-white fw-bold">@ViewBag.TotalSnippets</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title text-muted">Favorites</h5>
+                    <h2 class="text-white fw-bold">@ViewBag.FavoritesCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-globe fa-3x text-success mb-3"></i>
+                    <h5 class="card-title text-muted">Public Links</h5>
+                    <h2 class="text-white fw-bold">@ViewBag.PublicCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark border-secondary shadow">
+                <div class="card-header border-secondary text-center">
+                    <h5 class="text-white m-0">Languages Distribution</h5>
+                </div>
+                <div class="card-body d-flex justify-content-center" style="position: relative; height:400px;">
+                    <canvas id="languagesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // استقبال البيانات من C#
+        const labels = @Html.Raw(labelsJson);
+        const data = @Html.Raw(dataJson);
+
+        // إعداد ألوان تناسب الدارك ثيم لكل لغة
+        const backgroundColors = [
+        '#e74c3c', // C#
+        '#f1c40f', // JS
+        '#3498db', // HTML
+        '#2ecc71', // SQL
+        '#dc3545', // Java
+        '#a29bfe', // Kotlin
+        '#95a5a6'  // Other
+        ];
+
+        // رسم المخطط
+        const ctx = document.getElementById('languagesChart').getContext('2d');
+        new Chart(ctx, {
+        type: 'doughnut', // نوع المخطط (دائري مجوف)
+        data: {
+        labels: labels,
+        datasets: [{
+        data: data,
+        backgroundColor: backgroundColors,
+        borderColor: '#1e1e1e',
+        borderWidth: 2,
+        hoverOffset: 10
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: {
+        position: 'right',
+        labels: { color: '#d4d4d4', font: { size: 14 } }
+        }
+        }
+        }
+        });
+    </script>
+}

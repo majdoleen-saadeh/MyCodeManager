@@ -1,0 +1,21 @@
+﻿@model MyCodeManager.Models.Snippet
+@{
+    Layout = "_Layout"; // نستخدم نفس التصميم
+    ViewData["Title"] = "Shared Snippet";
+}
+
+<div class="container mt-5">
+    <div class="card bg-dark border-secondary shadow">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+            <h4 class="text-white m-0">@Model.Title</h4>
+            <span class="badge bg-primary">@Model.Language</span>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">@Model.Description</p>
+            <pre class="bg-black p-3 rounded"><code>@Model.Code</code></pre>
+        </div>
+        <div class="card-footer border-secondary text-muted small">
+            Shared via Code Vault - Created by @Model.UserId
+        </div>
+    </div>
+</div>

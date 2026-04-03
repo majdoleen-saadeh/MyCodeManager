@@ -70,6 +70,60 @@ namespace MyCodeManager.Controllers
 
             return View(snippet);
         }
+        // دالة لتفعيل/إلغاء المشاركة وتوليد الرمز
+        public async Task<IActionResult> ToggleSharing(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var snippet = await _context.Snippet.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (snippet != null)
+            {
+                snippet.IsPublic = !snippet.IsPublic;
+                // إذا أصبح عاماً، نولد له رمزاً فريداً إذا لم يكن موجوداً
+                if (snippet.IsPublic && string.IsNullOrEmpty(snippet.ShareToken))
+                {
+                    snippet.ShareToken = Guid.NewGuid().ToString().Substring(0, 8);
+                }
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // دالة عرض الكود العام (متاحة للجميع بدون تسجيل دخول)
+        [AllowAnonymous]
+        public async Task<IActionResult> Share(string token)
+        {
+            if (string.IsNullOrEmpty(token)) return NotFound();
+
+            var snippet = await _context.Snippet
+                .FirstOrDefaultAsync(m => m.ShareToken == token && m.IsPublic);
+
+            if (snippet == null) return NotFound();
+
+            return View(snippet);
+        }
+        public async Task<IActionResult> Dashboard()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // 1. حساب الإحصائيات السريعة
+            ViewBag.TotalSnippets = await _context.Snippet.CountAsync(s => s.UserId == userId);
+            ViewBag.FavoritesCount = await _context.Snippet.CountAsync(s => s.UserId == userId && s.IsFavorite);
+            ViewBag.PublicCount = await _context.Snippet.CountAsync(s => s.UserId == userId && s.IsPublic);
+
+            // 2. تجميع البيانات للرسم البياني (كم كود لكل لغة)
+            var langStats = await _context.Snippet
+                .Where(s => s.UserId == userId)
+                .GroupBy(s => s.Language)
+                .Select(g => new { Lang = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            // تحويل البيانات لمصفوفات ليفهمها الجافاسكريبت
+            ViewBag.ChartLabels = langStats.Select(x => string.IsNullOrEmpty(x.Lang) ? "Other" : x.Lang).ToArray();
+            ViewBag.ChartData = langStats.Select(x => x.Count).ToArray();
+
+            return View();
+        }
 
         // GET: Snippets/Create
         public IActionResult Create()
